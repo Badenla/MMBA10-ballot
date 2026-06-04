@@ -30,8 +30,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1rem;}
 .card-title{font-size:13px;font-weight:600;color:var(--ink2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:1rem;}
 .input-row{display:flex;gap:8px;flex-wrap:wrap;}
-input[type=text]{flex:1;min-width:180px;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:16px;font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);outline:none;transition:border-color .2s;}
-input[type=text]:focus{border-color:var(--blue);}
+input[type=text],input[type=password]{flex:1;min-width:180px;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:16px;font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);outline:none;transition:border-color .2s;}
+input[type=text]:focus,input[type=password]:focus{border-color:var(--blue);}
 .btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:var(--radius-sm);font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--ink);transition:all .15s;white-space:nowrap;}
 .btn:hover{background:var(--paper);}
 .btn:active{transform:scale(0.98);}
@@ -41,6 +41,7 @@ input[type=text]:focus{border-color:var(--blue);}
 .btn-green{background:var(--green);color:#fff;border-color:var(--green);}
 .btn-green:hover{background:#047857;}
 .btn-red{background:var(--red-light);color:var(--red);border-color:#fca5a5;}
+.btn-red:hover{background:#fee2e2;}
 .suggestions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
 .sugg-btn{padding:7px 14px;border-radius:20px;font-size:13px;font-weight:500;border:1px solid var(--border);background:var(--paper);color:var(--ink2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
 .sugg-btn:hover{background:var(--blue-light);border-color:var(--blue-mid);color:var(--blue);}
@@ -60,9 +61,11 @@ input[type=text]:focus{border-color:var(--blue);}
 .big-num{font-family:'DM Serif Display',serif;font-size:80px;color:var(--blue);line-height:1;margin:0.5rem 0;}
 .your-name-label{font-size:16px;font-weight:500;}
 .your-sub{font-size:13px;color:var(--ink3);margin-top:6px;}
+.screenshot-box{margin-top:1rem;padding:10px 14px;background:var(--amber-light);border:1px solid #fde68a;border-radius:var(--radius-sm);font-size:13px;color:var(--amber);display:flex;align-items:center;gap:8px;}
 .alert{padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
 .alert-ok{background:var(--green-light);color:var(--green);border:1px solid #a7f3d0;}
 .alert-warn{background:var(--amber-light);color:var(--amber);border:1px solid #fde68a;}
+.alert-err{background:var(--red-light);color:var(--red);border:1px solid #fca5a5;}
 .section-heading{font-size:12px;font-weight:600;color:var(--ink2);text-transform:uppercase;letter-spacing:.6px;margin:1.5rem 0 .75rem;display:flex;align-items:center;gap:8px;}
 table{width:100%;border-collapse:collapse;font-size:13px;}
 th{padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);background:var(--paper);}
@@ -78,6 +81,13 @@ svg.icon{width:15px;height:15px;display:inline-block;vertical-align:-2px;fill:no
 .loading{text-align:center;padding:3rem 1rem;color:var(--ink3);font-size:14px;}
 .spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:-4px;}
 @keyframes spin{to{transform:rotate(360deg)}}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:100;padding:1rem;}
+.modal{background:var(--surface);border-radius:var(--radius);padding:1.5rem;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,0.2);}
+.modal h3{font-size:16px;font-weight:500;margin-bottom:8px;}
+.modal p{font-size:13px;color:var(--ink2);margin-bottom:1rem;line-height:1.6;}
+.modal .btn-row{margin-top:1rem;}
+.pin-err{font-size:12px;color:var(--red);margin-top:6px;min-height:16px;}
+.reclaim-box{margin-top:1rem;padding:10px 14px;background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:var(--radius-sm);font-size:13px;color:var(--blue);}
 </style>
 </head>
 <body>
@@ -90,14 +100,16 @@ svg.icon{width:15px;height:15px;display:inline-block;vertical-align:-2px;fill:no
     <span class="pill pill-amber">10 OPM cases</span>
   </div>
 </div>
-<div class="main"><div id="app"><div class="loading"><span class="spinner"></span>Connecting...</div></div></div>
+<div class="main"><div id="app"><div class="loading"><span class="spinner"></span>Connecting to database...</div></div></div>
+<div id="modal-root"></div>
 
-<!-- Firebase v9 compat (works as plain script tags, no bundler needed) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-
 <script>
-// ── Firebase init ──────────────────────────────────────────────
+// ── Config ─────────────────────────────────────────────────────
+const ADMIN_PIN = "1010"; // change this to whatever PIN you want
+const CONNECT_TIMEOUT = 8000; // ms before showing connection error
+
 firebase.initializeApp({
   apiKey:"AIzaSyDQGTFUJfPbPtGvfxlLwmsYh9NAhp5nsDc",
   authDomain:"mmba-ballot.firebaseapp.com",
@@ -153,17 +165,24 @@ const OPM=[
   {name:"Lex Service Group",week:"W13",date:"Aug 19"}
 ];
 
-// ── Local state ────────────────────────────────────────────────
+// ── State ──────────────────────────────────────────────────────
 let state={members:{},locked:false,pairs:null};
 let myFull=null;
 let selectedFull=null;
+let connected=false;
+let connectTimer=null;
 
 function getFirst(full){return MEMBERS.find(m=>m.full===full)?.first||full;}
+function fbKey(full){return full.replace(/[\s.]/g,'_');}
 
 // ── Ballot logic ───────────────────────────────────────────────
 function shuffle(a){
   a=[...a];
-  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  for(let i=a.length-1;i>0;i--){
+    // FIX 1: use crypto random for better randomness — avoids transaction retry bias
+    const j=Math.floor((crypto.getRandomValues(new Uint32Array(1))[0]/0xFFFFFFFF)*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
   return a;
 }
 function tryAssign(cases,used,mwc){
@@ -206,18 +225,49 @@ const ICO_CHECK="M20 6L9 17l-5-5";
 const ICO_TRASH="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6";
 const ICO_BOLT="M13 2L3 14h9l-1 8 10-12h-9l1-8";
 const ICO_USERS="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75";
+const ICO_WARN="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z";
+const ICO_CAMERA="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2zM12 17a4 4 0 100-8 4 4 0 000 8z";
+const ICO_LOCK="M19 11H5a2 2 0 00-2 2v7a2 2 0 002 2h14a2 2 0 002-2v-7a2 2 0 00-2-2zM7 11V7a5 5 0 0110 0v4";
 
-// ── Render ─────────────────────────────────────────────────────
+// ── Main render ────────────────────────────────────────────────
 function render(){
   const count=Object.keys(state.members).length;
   const app=document.getElementById('app');
+
+  // FIX 5: Connection error state
+  if(!connected){
+    app.innerHTML=`<div class="alert alert-err">${icon(ICO_WARN)} Cannot connect to database. Check your internet connection and refresh the page.</div>`;
+    return;
+  }
+
   if(state.locked&&state.pairs){renderResults(app);return;}
+
   const me=myFull?state.members[myFull]:null;
   const prevInput=document.getElementById('ni');
   const savedVal=prevInput?prevInput.value:'';
   let h='';
 
-  if(!me){
+  // FIX 4: If name already taken but no session, show reclaim option
+  const takenByMe = !myFull && (() => {
+    const saved=localStorage.getItem('mmba10_me');
+    return saved && state.members[saved] ? saved : null;
+  })();
+
+  if(takenByMe && !myFull){
+    const entry=state.members[takenByMe];
+    h+=`<div class="card">
+      <div class="your-number-card">
+        <div style="font-size:13px;color:var(--ink3);font-weight:500;text-transform:uppercase;letter-spacing:.6px">Welcome back</div>
+        <div class="big-num">${entry.number}</div>
+        <div class="your-name-label">${getFirst(takenByMe)}</div>
+        <div class="your-sub">Your number was saved. You're still in.</div>
+        <div class="screenshot-box" style="justify-content:center;margin-top:1rem">${icon(ICO_CAMERA)} Screenshot your number so you don't lose it</div>
+      </div>
+      <div style="margin-top:1rem;text-align:center">
+        <button class="btn btn-primary" onclick="reclaim('${takenByMe}')">${icon(ICO_CHECK)} That's me — rejoin</button>
+      </div>
+    </div>`;
+  } else if(!me){
     h+=`<div class="card">
       <div class="card-title">Pick your number</div>
       <div class="input-row">
@@ -235,6 +285,7 @@ function render(){
         <div class="your-name-label">${getFirst(myFull)}</div>
         <div class="your-sub">You're in! Waiting for the rest of the group...</div>
       </div>
+      <div class="screenshot-box">${icon(ICO_CAMERA)} Screenshot your number now — you'll need it if you close this page</div>
     </div>`;
   }
 
@@ -254,31 +305,41 @@ function render(){
   });
   h+=`</div>`;
 
-  if(count===14&&me){
+  const effectiveMe = me || (takenByMe ? state.members[takenByMe] : null);
+  if(count===14 && effectiveMe){
     h+=`<div class="divider"></div>
     <div class="alert alert-ok">${icon(ICO_CHECK)} All 14 joined — ready to generate!</div>
-    <button class="btn btn-green" onclick="lock()">${icon(ICO_BOLT)} Generate case pairs</button>`;
-  }else if(count===14&&!me){
+    <button class="btn btn-green" onclick="showGenerateModal()">${icon(ICO_BOLT)} Generate case pairs</button>`;
+  } else if(count===14 && !effectiveMe){
     h+=`<div class="divider"></div>
-    <div class="alert alert-warn">All 14 slots are taken. If your name isn't in the list, ask your class rep to reset.</div>`;
+    <div class="alert alert-warn">${icon(ICO_WARN)} All 14 slots are filled. Contact your class rep if there's an issue.</div>`;
   }
 
+  // FIX 3 & 6: Admin-only actions behind PIN
   h+=`<div class="divider"></div>
   <div class="btn-row">
-    <button class="btn btn-red" onclick="reset()">${icon(ICO_TRASH)} Reset ballot</button>
+    <button class="btn btn-red" onclick="showAdminModal()">${icon(ICO_LOCK)} Admin actions</button>
   </div>`;
 
   app.innerHTML=h;
 
-  if(!me){
+  if(!me && !takenByMe){
     const ni=document.getElementById('ni');
     const sg=document.getElementById('sg');
-    ni.addEventListener('input',()=>{
-      selectedFull=null;
-      suggest(ni,sg);
-    });
-    if(savedVal)suggest(ni,sg);
+    if(ni){
+      ni.addEventListener('input',()=>{
+        selectedFull=null;
+        suggest(ni,sg);
+      });
+      if(savedVal) suggest(ni,sg);
+    }
   }
+}
+
+function reclaim(full){
+  myFull=full;
+  localStorage.setItem('mmba10_me', full);
+  render();
 }
 
 function suggest(ni,sg){
@@ -302,12 +363,11 @@ function pickName(full){
   const sg=document.getElementById('sg');
   if(ni) ni.value=getFirst(full);
   if(sg) sg.innerHTML=`<button class="sugg-btn selected">${getFirst(full)}</button>`;
-  // update hint
   const hint=document.querySelector('.hint');
   if(hint) hint.innerHTML=`${icon(ICO_CHECK)} <strong>${getFirst(full)}</strong> selected — now click Pick my number`;
 }
 
-// ── Join (Firebase transaction ensures unique numbers) ─────────
+// ── Join ───────────────────────────────────────────────────────
 async function join(){
   if(!selectedFull){
     const ni=document.getElementById('ni');
@@ -325,29 +385,30 @@ async function join(){
   const btn=document.getElementById('join-btn');
   if(btn){btn.disabled=true;btn.innerHTML=`<span class="spinner"></span> Saving...`;}
 
-  const memberRef=REF.child('members/'+selectedFull.replace(/\s/g,'_'));
-
   try{
-    // Use a transaction so two people can't grab the same number
+    // FIX 1: use crypto.getRandomValues inside transaction for unbiased number selection
     const result = await REF.child('members').transaction(currentMembers=>{
       if(!currentMembers) currentMembers={};
-      // already joined
-      if(currentMembers[selectedFull.replace(/\s/g,'_')]) return currentMembers;
-      // find available number
+      const key=fbKey(selectedFull);
+      if(currentMembers[key]) return currentMembers; // already joined
       const used=new Set(Object.values(currentMembers).map(e=>e.number));
       const avail=[];
       for(let i=1;i<=14;i++) if(!used.has(i)) avail.push(i);
-      if(avail.length===0) return; // abort — no numbers left
-      const num=avail[Math.floor(Math.random()*avail.length)];
-      currentMembers[selectedFull.replace(/\s/g,'_')]={number:num, name:selectedFull, joinedAt:Date.now()};
+      if(avail.length===0) return undefined; // abort
+      // pick random from available using crypto
+      const idx=Math.floor((crypto.getRandomValues(new Uint32Array(1))[0]/0x100000000)*avail.length);
+      const num=avail[idx];
+      currentMembers[key]={number:num,name:selectedFull,joinedAt:Date.now()};
       return currentMembers;
     });
 
     if(result.committed){
       myFull=selectedFull;
       selectedFull=null;
+      // FIX 4: persist to localStorage so rejoining works after tab close
+      localStorage.setItem('mmba10_me', myFull);
     }else{
-      alert('No numbers left or something went wrong. Please refresh.');
+      alert('No numbers left or a conflict occurred. Please refresh and try again.');
       if(btn){btn.disabled=false;btn.innerHTML=`${icon("M7 11l5-5m0 0l5 5m-5-5v12")} Pick my number`;}
     }
   }catch(e){
@@ -357,27 +418,118 @@ async function join(){
   }
 }
 
+// ── Generate modal (FIX 3: must be logged in to generate) ──────
+function showGenerateModal(){
+  const effectiveMe = myFull || localStorage.getItem('mmba10_me');
+  if(!effectiveMe || !state.members[effectiveMe]){
+    showModal(`
+      <h3>Join first</h3>
+      <p>You need to have picked your own number before you can generate the pairs.</p>
+      <div class="btn-row"><button class="btn btn-primary" onclick="closeModal()">OK</button></div>
+    `);
+    return;
+  }
+  showModal(`
+    <h3>${icon(ICO_BOLT)} Generate case pairs</h3>
+    <p>This will randomly assign all 14 members to cases for CMA and OPM. This cannot be undone without a reset.</p>
+    <p style="margin-top:8px">Are you sure everyone is ready?</p>
+    <div class="btn-row" style="margin-top:1rem">
+      <button class="btn btn-green" onclick="closeModal();lock()">${icon(ICO_BOLT)} Yes, generate now</button>
+      <button class="btn" onclick="closeModal()">Cancel</button>
+    </div>
+  `);
+}
+
+// ── Admin modal (FIX 6: PIN-protected reset & admin actions) ───
+function showAdminModal(){
+  showModal(`
+    <h3>${icon(ICO_LOCK)} Admin access</h3>
+    <p>Enter the admin PIN to access admin actions.</p>
+    <input type="password" id="pin-input" placeholder="Enter PIN..." style="width:100%;margin-top:8px"/>
+    <div class="pin-err" id="pin-err"></div>
+    <div class="btn-row" style="margin-top:1rem">
+      <button class="btn btn-primary" onclick="checkPin()">${icon(ICO_CHECK)} Confirm</button>
+      <button class="btn" onclick="closeModal()">Cancel</button>
+    </div>
+  `);
+  setTimeout(()=>{const p=document.getElementById('pin-input');if(p)p.focus();},100);
+}
+
+function checkPin(){
+  const val=document.getElementById('pin-input')?.value?.trim();
+  const err=document.getElementById('pin-err');
+  if(val===ADMIN_PIN){
+    showAdminPanel();
+  }else{
+    if(err) err.textContent='Incorrect PIN. Try again.';
+  }
+}
+
+function showAdminPanel(){
+  const count=Object.keys(state.members).length;
+  showModal(`
+    <h3>${icon(ICO_LOCK)} Admin panel</h3>
+    <p style="margin-bottom:1rem">Current status: <strong>${count}/14 joined</strong> · Ballot ${state.locked?'locked':'open'}</p>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button class="btn btn-red" onclick="closeModal();confirmReset()">${icon(ICO_TRASH)} Reset entire ballot</button>
+      ${state.locked?`<button class="btn" onclick="closeModal();unlockBallot()">${icon(ICO_BOLT)} Unlock ballot (redo pairs)</button>`:''}
+    </div>
+    <div class="btn-row" style="margin-top:1rem">
+      <button class="btn" onclick="closeModal()">Close</button>
+    </div>
+  `);
+}
+
+function confirmReset(){
+  showModal(`
+    <h3>${icon(ICO_WARN)} Confirm reset</h3>
+    <p>This will delete all numbers and pairs. Everyone will need to rejoin. This cannot be undone.</p>
+    <div class="btn-row" style="margin-top:1rem">
+      <button class="btn btn-red" onclick="closeModal();doReset()">${icon(ICO_TRASH)} Yes, reset everything</button>
+      <button class="btn" onclick="closeModal()">Cancel</button>
+    </div>
+  `);
+}
+
+async function doReset(){
+  await REF.set({members:{},locked:false,pairs:null});
+  myFull=null;selectedFull=null;
+  localStorage.removeItem('mmba10_me');
+}
+
+async function unlockBallot(){
+  await REF.update({locked:false,pairs:null});
+}
+
 // ── Generate & lock ────────────────────────────────────────────
 async function lock(){
   const snap=await REF.once('value');
   const data=snap.val()||{};
   const members=data.members||{};
-  if(Object.keys(members).length<14){alert('Not all 14 members have joined yet.');return;}
+  if(Object.keys(members).length<14){
+    showModal(`<h3>Not ready yet</h3><p>Only ${Object.keys(members).length} of 14 members have joined.</p><div class="btn-row" style="margin-top:1rem"><button class="btn btn-primary" onclick="closeModal()">OK</button></div>`);
+    return;
+  }
   const ordered=Object.entries(members).sort((a,b)=>a[1].number-b[1].number).map(e=>e[1].name);
   const pairs=generate(ordered);
-  if(!pairs){alert('Could not find valid pairs. Please reset and try again.');return;}
+  if(!pairs){
+    showModal(`<h3>Could not generate</h3><p>The algorithm couldn't find valid pairs. Please try again or reset.</p><div class="btn-row" style="margin-top:1rem"><button class="btn btn-primary" onclick="closeModal()">OK</button></div>`);
+    return;
+  }
   await REF.update({locked:true,pairs:JSON.stringify(pairs)});
 }
 
+// ── Results ────────────────────────────────────────────────────
 function renderResults(app){
   const pairs=state.pairs;
+  const effective=myFull||localStorage.getItem('mmba10_me');
   let h=`<div class="alert alert-ok">${icon(ICO_CHECK)} Ballot complete — all pairs locked in.</div>`;
 
   h+=`<div class="section-heading"><span class="pill pill-blue" style="font-size:11px">CMA</span> Cost &amp; Management Accounting</div>`;
   h+=`<div class="table-wrap"><table><thead><tr><th>#</th><th>Case</th><th>Date</th><th>Pair</th></tr></thead><tbody>`;
   pairs.cma.forEach((p,i)=>{
     const A=getFirst(p.a),B=getFirst(p.b);
-    const me=myFull&&(p.a===myFull||p.b===myFull);
+    const me=effective&&(p.a===effective||p.b===effective);
     h+=`<tr${me?' class="highlight"':''}><td style="color:var(--ink3);font-weight:500">${i+1}</td><td>${p.c.name}</td><td style="color:var(--ink3);font-size:12px;white-space:nowrap">${p.c.date}</td><td><span class="pair-tag">${A} &amp; ${B}</span></td></tr>`;
   });
   h+=`</tbody></table></div>`;
@@ -386,7 +538,7 @@ function renderResults(app){
   h+=`<div class="table-wrap"><table><thead><tr><th>#</th><th>Case</th><th>Date</th><th>Pair</th></tr></thead><tbody>`;
   pairs.opm.forEach((p,i)=>{
     const A=getFirst(p.a),B=getFirst(p.b);
-    const me=myFull&&(p.a===myFull||p.b===myFull);
+    const me=effective&&(p.a===effective||p.b===effective);
     h+=`<tr${me?' class="highlight"':''}><td style="color:var(--ink3);font-weight:500">${i+1}</td><td>${p.c.name}</td><td style="color:var(--ink3);font-size:12px;white-space:nowrap">${p.c.date}</td><td><span class="pair-tag">${A} &amp; ${B}</span></td></tr>`;
   });
   h+=`</tbody></table></div>`;
@@ -398,27 +550,49 @@ function renderResults(app){
   pairs.cma.forEach(p=>{pm[p.a].cma=p.c.name;pm[p.b].cma=p.c.name;});
   pairs.opm.forEach(p=>{pm[p.a].opm=p.c.name;pm[p.b].opm=p.c.name;});
   MEMBERS.forEach(m=>{
-    const me=myFull===m.full;
+    const me=effective===m.full;
     h+=`<tr${me?' class="highlight"':''}><td style="font-weight:500">${m.first}</td><td style="font-size:12px">${pm[m.full].cma}</td><td style="font-size:12px">${pm[m.full].opm}</td></tr>`;
   });
   h+=`</tbody></table></div>`;
 
   h+=`<div class="divider"></div><div class="btn-row">
-    <button class="btn btn-red" onclick="reset()">${icon(ICO_TRASH)} Reset &amp; redo ballot</button>
+    <button class="btn btn-red" onclick="showAdminModal()">${icon(ICO_LOCK)} Admin actions</button>
   </div>`;
   app.innerHTML=h;
 }
 
-async function reset(){
-  if(!confirm('Reset the entire ballot? All numbers and pairs will be cleared.'))return;
-  await REF.set({members:{},locked:false,pairs:null});
-  myFull=null;selectedFull=null;
+// ── Modal helpers ──────────────────────────────────────────────
+function showModal(html){
+  const root=document.getElementById('modal-root');
+  root.innerHTML=`<div class="modal-overlay" onclick="handleOverlayClick(event)"><div class="modal">${html}</div></div>`;
+}
+function closeModal(){
+  document.getElementById('modal-root').innerHTML='';
+}
+function handleOverlayClick(e){
+  if(e.target.classList.contains('modal-overlay')) closeModal();
 }
 
-// ── Live listener — updates instantly for everyone ─────────────
+// ── Firebase connection monitor (FIX 5) ───────────────────────
+db.ref('.info/connected').on('value', snap=>{
+  connected = snap.val()===true;
+  if(connected){
+    clearTimeout(connectTimer);
+  }
+  render();
+});
+
+// Show error if no connection after timeout
+connectTimer=setTimeout(()=>{
+  if(!connected){
+    connected=false;
+    render();
+  }
+},CONNECT_TIMEOUT);
+
+// ── Live data listener ─────────────────────────────────────────
 REF.on('value',snap=>{
   const data=snap.val()||{};
-  // rebuild members map from Firebase keys back to full names
   const rawMembers=data.members||{};
   const members={};
   Object.values(rawMembers).forEach(e=>{
@@ -428,12 +602,12 @@ REF.on('value',snap=>{
   state.locked=data.locked||false;
   state.pairs=data.pairs?JSON.parse(data.pairs):null;
 
-  // restore myFull if page was refreshed
+  // FIX 4: restore from localStorage (survives tab close, different sessions)
   if(!myFull){
-    const saved=sessionStorage.getItem('mmba10_me');
+    const saved=localStorage.getItem('mmba10_me');
     if(saved&&members[saved]) myFull=saved;
   }
-  if(myFull) sessionStorage.setItem('mmba10_me',myFull);
+  if(myFull) localStorage.setItem('mmba10_me',myFull);
 
   render();
 });
