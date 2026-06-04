@@ -7,13 +7,13 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
 :root {
-  --ink: #1a1a2e;--ink2: #4a4a6a;--ink3: #8888aa;
-  --paper: #f8f7f4;--surface: #ffffff;
-  --blue: #2563eb;--blue-light: #eff6ff;--blue-mid: #bfdbfe;
-  --green: #059669;--green-light: #ecfdf5;
-  --amber: #d97706;--amber-light: #fffbeb;
-  --red: #dc2626;--red-light: #fef2f2;
-  --border: #e5e4df;--radius: 12px;--radius-sm: 8px;
+  --ink:#1a1a2e;--ink2:#4a4a6a;--ink3:#8888aa;
+  --paper:#f8f7f4;--surface:#ffffff;
+  --blue:#2563eb;--blue-light:#eff6ff;--blue-mid:#bfdbfe;
+  --green:#059669;--green-light:#ecfdf5;
+  --amber:#d97706;--amber-light:#fffbeb;
+  --red:#dc2626;--red-light:#fef2f2;
+  --border:#e5e4df;--radius:12px;--radius-sm:8px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;}
@@ -30,37 +30,39 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1rem;}
 .card-title{font-size:13px;font-weight:600;color:var(--ink2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:1rem;}
 .input-row{display:flex;gap:8px;flex-wrap:wrap;}
-input[type=text]{flex:1;min-width:180px;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);outline:none;transition:border-color .2s;}
+input[type=text]{flex:1;min-width:180px;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:16px;font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);outline:none;transition:border-color .2s;}
 input[type=text]:focus{border-color:var(--blue);}
 .btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:var(--radius-sm);font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--ink);transition:all .15s;white-space:nowrap;}
 .btn:hover{background:var(--paper);}
+.btn:active{transform:scale(0.98);}
 .btn:disabled{opacity:.4;cursor:not-allowed;}
 .btn-primary{background:var(--blue);color:#fff;border-color:var(--blue);}
 .btn-primary:hover{background:#1d4ed8;}
 .btn-green{background:var(--green);color:#fff;border-color:var(--green);}
 .btn-green:hover{background:#047857;}
 .btn-red{background:var(--red-light);color:var(--red);border-color:#fca5a5;}
-.btn-red:hover{background:#fee2e2;}
-.suggestions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
-.sugg-btn{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid var(--border);background:var(--paper);color:var(--ink2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
-.sugg-btn:hover{background:var(--blue-light);border-color:var(--blue-mid);color:var(--blue);}
+.suggestions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.sugg-btn{padding:7px 14px;border-radius:20px;font-size:13px;font-weight:500;border:1px solid var(--border);background:var(--paper);color:var(--ink2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.sugg-btn:hover,.sugg-btn:focus{background:var(--blue-light);border-color:var(--blue-mid);color:var(--blue);}
+.sugg-btn.selected{background:var(--blue);color:#fff;border-color:var(--blue);}
 .progress-wrap{margin-bottom:1.25rem;}
 .progress-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--ink3);margin-bottom:6px;}
 .progress-track{height:6px;background:var(--border);border-radius:6px;overflow:hidden;}
 .progress-fill{height:100%;background:var(--blue);border-radius:6px;transition:width .5s cubic-bezier(.4,0,.2,1);}
 .member-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;}
-.chip{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--paper);font-size:13px;transition:all .2s;}
+.chip{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--paper);font-size:13px;}
 .chip.joined{background:var(--surface);border-color:var(--blue-mid);}
 .chip.pending{opacity:.35;}
 .num-circle{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;}
 .num-circle.has-num{background:var(--blue-light);color:var(--blue);}
 .num-circle.no-num{background:var(--border);color:var(--ink3);}
 .your-number-card{text-align:center;padding:1.5rem 1rem;}
-.big-num{font-family:'DM Serif Display',serif;font-size:72px;color:var(--blue);line-height:1;margin:0.5rem 0;}
+.big-num{font-family:'DM Serif Display',serif;font-size:80px;color:var(--blue);line-height:1;margin:0.5rem 0;}
 .your-name-label{font-size:16px;font-weight:500;}
-.your-sub{font-size:13px;color:var(--ink3);margin-top:4px;}
+.your-sub{font-size:13px;color:var(--ink3);margin-top:6px;}
 .alert{padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
 .alert-ok{background:var(--green-light);color:var(--green);border:1px solid #a7f3d0;}
+.alert-warn{background:var(--amber-light);color:var(--amber);border:1px solid #fde68a;}
 .section-heading{font-size:12px;font-weight:600;color:var(--ink2);text-transform:uppercase;letter-spacing:.6px;margin:1.5rem 0 .75rem;display:flex;align-items:center;gap:8px;}
 table{width:100%;border-collapse:collapse;font-size:13px;}
 th{padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);background:var(--paper);}
@@ -72,6 +74,7 @@ tr.highlight td{background:var(--blue-light);}
 .divider{border:none;border-top:1px solid var(--border);margin:1.25rem 0;}
 .btn-row{display:flex;gap:8px;flex-wrap:wrap;}
 svg.icon{width:15px;height:15px;display:inline-block;vertical-align:-2px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.hint{font-size:12px;color:var(--ink3);margin-top:6px;}
 </style>
 </head>
 <body>
@@ -105,14 +108,14 @@ const MEMBERS=[
 ];
 const CMA=[
   {name:"Lunch Box",week:"W1",date:"Jun 6"},
-  {name:"Hanson Manufacturing Company",week:"W2",date:"Jun 9–13"},
-  {name:"Prestige Telephone Company",week:"W3",date:"Jun 13–22"},
+  {name:"Hanson Manufacturing Company",week:"W2",date:"Jun 9-13"},
+  {name:"Prestige Telephone Company",week:"W3",date:"Jun 13-22"},
   {name:"Sheridan Carpets",week:"W4a",date:"Jun 23"},
-  {name:"Huron Automotive Company",week:"W4b",date:"Jun 23–25"},
+  {name:"Huron Automotive Company",week:"W4b",date:"Jun 23-25"},
   {name:"Industrial Grinders",week:"W5a",date:"Jun 25"},
   {name:"Symalit A.G.",week:"W5b",date:"Jun 26"},
   {name:"Signatron Corporation",week:"W6a",date:"Jun 30"},
-  {name:"Mueller-Lemkhul GmbH",week:"W7",date:"Jul 14–15"},
+  {name:"Mueller-Lemkhul GmbH",week:"W7",date:"Jul 14-15"},
   {name:"Destin Brass Products Company",week:"W8",date:"Jul 18"},
   {name:"Agbero Nig. Ltd.",week:"W9",date:"Aug 12"}
 ];
@@ -125,14 +128,15 @@ const OPM=[
   {name:"Chaircraft Corporation",week:"W10",date:"Jul 29"},
   {name:"Pharmacy Service Improvement at CVS (A)",week:"W11a",date:"Aug 1"},
   {name:"Hangars to Helipads",week:"W11b",date:"Aug 1"},
-  {name:"Ojema – The Plant Manager",week:"W12",date:"Aug 8"},
+  {name:"Ojema - The Plant Manager",week:"W12",date:"Aug 8"},
   {name:"Lex Service Group",week:"W13",date:"Aug 19"}
 ];
 
-const KEY="mmba10-ballot-v4";
+const KEY="mmba10-ballot-v5";
 let state={members:{},locked:false,pairs:null};
-let myFull=null;
-let lastTyped=0; // timestamp of last keypress
+let myFull=null;        // confirmed joined member
+let selectedFull=null;  // JS variable — survives re-renders
+let lastTyped=0;
 
 function getFirst(full){return MEMBERS.find(m=>m.full===full)?.first||full;}
 
@@ -143,11 +147,7 @@ async function load(){
 async function save(){
   try{await window.storage.set(KEY,JSON.stringify(state),true);}catch(e){}
 }
-
-function isUserBusy(){
-  // Block refresh if user typed within the last 10 seconds
-  return (Date.now()-lastTyped)<10000;
-}
+function isUserBusy(){return(Date.now()-lastTyped)<10000;}
 
 function shuffle(a){
   a=[...a];
@@ -201,20 +201,21 @@ function render(){
   if(state.locked&&state.pairs){renderResults(app);return;}
   const me=myFull?state.members[myFull]:null;
 
-  // Preserve input value across re-renders
+  // preserve typed text across re-renders
   const prevInput=document.getElementById('ni');
   const savedVal=prevInput?prevInput.value:'';
-  const savedSel=prevInput?prevInput.dataset.sel:'';
 
   let h='';
+
   if(!me){
     h+=`<div class="card">
       <div class="card-title">Pick your number</div>
       <div class="input-row">
-        <input type="text" id="ni" placeholder="Type your first name…" autocomplete="off" value="${savedVal}"/>
-        <button class="btn btn-primary" onclick="join()">${icon("M7 11l5-5m0 0l5 5m-5-5v12")} Pick my number</button>
+        <input type="text" id="ni" placeholder="Type your first name..." autocomplete="off" value="${savedVal.replace(/"/g,'&quot;')}"/>
+        <button class="btn btn-primary" id="join-btn" onclick="join()">${icon("M7 11l5-5m0 0l5 5m-5-5v12")} Pick my number</button>
       </div>
       <div id="sg" class="suggestions"></div>
+      ${selectedFull?`<div class="hint">${icon(ICO_CHECK)} Selected: <strong>${getFirst(selectedFull)}</strong> — now click Pick my number</div>`:'<div class="hint">Type your name then tap your name from the list below</div>'}
     </div>`;
   } else {
     h+=`<div class="card">
@@ -222,7 +223,7 @@ function render(){
         <div style="font-size:13px;color:var(--ink3);font-weight:500;text-transform:uppercase;letter-spacing:.6px">Your ballot number</div>
         <div class="big-num">${me.number}</div>
         <div class="your-name-label">${getFirst(myFull)}</div>
-        <div class="your-sub">Waiting for the rest of the group…</div>
+        <div class="your-sub">Waiting for the rest of the group...</div>
       </div>
     </div>`;
   }
@@ -237,13 +238,16 @@ function render(){
     const e=state.members[m.full];
     if(e){
       h+=`<div class="chip joined"><div class="num-circle has-num">${e.number}</div><span>${m.first}</span></div>`;
-    } else {
+    }else{
       h+=`<div class="chip pending"><div class="num-circle no-num">?</div><span>${m.first}</span></div>`;
     }
   });
   h+=`</div>`;
 
-  if(count===14){
+  if(count===14&&!me){
+    h+=`<div class="divider"></div><div class="alert alert-ok">${icon(ICO_CHECK)} All 14 joined — pick your number first, then generate pairs.</div>`;
+  }
+  if(count===14&&me){
     h+=`<div class="divider"></div>
     <div class="alert alert-ok">${icon(ICO_CHECK)} All 14 members have joined — ready to generate pairs!</div>
     <button class="btn btn-green" onclick="lock()">${icon(ICO_BOLT)} Generate case pairs</button>`;
@@ -260,14 +264,12 @@ function render(){
   if(!me){
     const ni=document.getElementById('ni');
     const sg=document.getElementById('sg');
-    if(savedSel) ni.dataset.sel=savedSel;
-
     ni.addEventListener('input',()=>{
-      lastTyped=Date.now(); // record every keystroke
+      lastTyped=Date.now();
+      selectedFull=null; // clear selection when typing again
       suggest(ni,sg);
     });
-    ni.addEventListener('focus',()=>{ lastTyped=Date.now(); });
-
+    ni.addEventListener('focus',()=>{lastTyped=Date.now();});
     if(savedVal) suggest(ni,sg);
   }
 }
@@ -275,34 +277,71 @@ function render(){
 function suggest(ni,sg){
   const v=ni.value.toLowerCase().trim();
   if(!v){sg.innerHTML='';return;}
-  const matches=MEMBERS.filter(m=>(m.first.toLowerCase().includes(v)||m.full.toLowerCase().includes(v))&&!state.members[m.full]);
-  sg.innerHTML=matches.map(m=>`<button class="sugg-btn" onmousedown="pick('${m.full}')">${m.first}</button>`).join('');
+  const matches=MEMBERS.filter(m=>
+    (m.first.toLowerCase().includes(v)||m.full.toLowerCase().includes(v))
+    &&!state.members[m.full]
+  );
+  sg.innerHTML=matches.map(m=>`
+    <button class="sugg-btn${selectedFull===m.full?' selected':''}"
+      onmousedown="event.preventDefault();pickName('${m.full}')"
+      ontouchstart="event.preventDefault();pickName('${m.full}')"
+    >${m.first}</button>
+  `).join('');
 }
 
-function pick(full){
-  const m=MEMBERS.find(x=>x.full===full);
+function pickName(full){
+  selectedFull=full;
+  lastTyped=0; // stop blocking refresh once selected
   const ni=document.getElementById('ni');
-  ni.value=m.first;
-  ni.dataset.sel=full;
-  document.getElementById('sg').innerHTML='';
-  lastTyped=0; // user has selected — allow refresh again
+  const sg=document.getElementById('sg');
+  if(ni){
+    ni.value=getFirst(full);
+    // update hint text
+    const hint=ni.closest('.card').querySelector('.hint');
+    if(hint) hint.innerHTML=`${icon(ICO_CHECK)} Selected: <strong>${getFirst(full)}</strong> — now click Pick my number`;
+  }
+  if(sg) sg.innerHTML=`<button class="sugg-btn selected" onmousedown="event.preventDefault()">${getFirst(full)}</button>`;
 }
 
 async function join(){
-  const ni=document.getElementById('ni');
-  const sel=ni.dataset.sel||null;
-  const typed=ni.value.trim().toLowerCase();
-  const match=sel?MEMBERS.find(m=>m.full===sel):MEMBERS.find(m=>m.first.toLowerCase()===typed||m.full.toLowerCase()===typed);
-  if(!match){alert('Please select your name from the suggestions.');return;}
+  if(!selectedFull){
+    const ni=document.getElementById('ni');
+    const typed=ni?ni.value.trim().toLowerCase():'';
+    // try exact first-name match as fallback
+    const match=MEMBERS.find(m=>m.first.toLowerCase()===typed&&!state.members[m.full]);
+    if(!match){
+      const sg=document.getElementById('sg');
+      if(sg) sg.innerHTML=`<div style="color:var(--red);font-size:13px;margin-top:4px">Please tap your name from the list first.</div>`;
+      return;
+    }
+    selectedFull=match.full;
+  }
+
+  const joinBtn=document.getElementById('join-btn');
+  if(joinBtn){joinBtn.disabled=true;joinBtn.textContent='Saving...';}
+
   await load();
-  if(state.members[match.full]){myFull=match.full;lastTyped=0;render();return;}
+  // already joined — just restore view
+  if(state.members[selectedFull]){
+    myFull=selectedFull;
+    selectedFull=null;
+    lastTyped=0;
+    render();
+    return;
+  }
+
   const used=new Set(Object.values(state.members).map(e=>e.number));
   const avail=[];for(let i=1;i<=14;i++)if(!used.has(i))avail.push(i);
+  if(avail.length===0){alert('All 14 numbers are taken!');return;}
   const num=avail[Math.floor(Math.random()*avail.length)];
-  state.members[match.full]={number:num,joinedAt:Date.now()};
-  myFull=match.full;
-  lastTyped=0; // done — allow refresh
-  await save();render();
+
+  state.members[selectedFull]={number:num,joinedAt:Date.now()};
+  await save();
+
+  myFull=selectedFull;
+  selectedFull=null;
+  lastTyped=0;
+  render(); // now render with myFull set — shows the big number card
 }
 
 async function lock(){
@@ -318,6 +357,7 @@ async function lock(){
 function renderResults(app){
   const pairs=state.pairs;
   let h=`<div class="alert alert-ok">${icon(ICO_CHECK)} Ballot complete — all pairs locked in.</div>`;
+
   h+=`<div class="section-heading"><span class="pill pill-blue" style="font-size:11px">CMA</span> Cost &amp; Management Accounting</div>`;
   h+=`<div class="table-wrap"><table><thead><tr><th>#</th><th>Case</th><th>Date</th><th>Pair</th></tr></thead><tbody>`;
   pairs.cma.forEach((p,i)=>{
@@ -326,6 +366,7 @@ function renderResults(app){
     h+=`<tr${me?' class="highlight"':''}><td style="color:var(--ink3);font-weight:500">${i+1}</td><td>${p.c.name}</td><td style="color:var(--ink3);font-size:12px;white-space:nowrap">${p.c.date}</td><td><span class="pair-tag">${A} &amp; ${B}</span></td></tr>`;
   });
   h+=`</tbody></table></div>`;
+
   h+=`<div class="section-heading"><span class="pill pill-green" style="font-size:11px">OPM</span> Operations Management</div>`;
   h+=`<div class="table-wrap"><table><thead><tr><th>#</th><th>Case</th><th>Date</th><th>Pair</th></tr></thead><tbody>`;
   pairs.opm.forEach((p,i)=>{
@@ -334,6 +375,7 @@ function renderResults(app){
     h+=`<tr${me?' class="highlight"':''}><td style="color:var(--ink3);font-weight:500">${i+1}</td><td>${p.c.name}</td><td style="color:var(--ink3);font-size:12px;white-space:nowrap">${p.c.date}</td><td><span class="pair-tag">${A} &amp; ${B}</span></td></tr>`;
   });
   h+=`</tbody></table></div>`;
+
   h+=`<div class="section-heading">${icon(ICO_USERS)} Full assignment summary</div>`;
   h+=`<div class="table-wrap"><table><thead><tr><th>Name</th><th>CMA case</th><th>OPM case</th></tr></thead><tbody>`;
   const pm={};
@@ -345,6 +387,7 @@ function renderResults(app){
     h+=`<tr${me?' class="highlight"':''}><td style="font-weight:500">${m.first}</td><td style="font-size:12px">${pm[m.full].cma}</td><td style="font-size:12px">${pm[m.full].opm}</td></tr>`;
   });
   h+=`</tbody></table></div>`;
+
   h+=`<div class="divider"></div><div class="btn-row">
     <button class="btn btn-red" onclick="reset()">${icon(ICO_TRASH)} Reset &amp; redo ballot</button>
   </div>`;
@@ -355,14 +398,15 @@ async function manualRefresh(){await load();render();}
 
 async function reset(){
   if(!confirm('Reset the entire ballot? All numbers and pairs will be cleared.'))return;
-  state={members:{},locked:false,pairs:null};myFull=null;lastTyped=0;
+  state={members:{},locked:false,pairs:null};
+  myFull=null;selectedFull=null;lastTyped=0;
   await save();render();
 }
 
 async function init(){
   await load();render();
   setInterval(async()=>{
-    if(isUserBusy())return; // skip if user typed in last 10 seconds
+    if(isUserBusy())return;
     await load();render();
   },5000);
 }
