@@ -305,14 +305,9 @@ function render(){
   });
   h+=`</div>`;
 
-  const effectiveMe = me || (takenByMe ? state.members[takenByMe] : null);
-  if(count===14 && effectiveMe){
+  if(count===14){
     h+=`<div class="divider"></div>
-    <div class="alert alert-ok">${icon(ICO_CHECK)} All 14 joined — ready to generate!</div>
-    <button class="btn btn-green" onclick="showGenerateModal()">${icon(ICO_BOLT)} Generate case pairs</button>`;
-  } else if(count===14 && !effectiveMe){
-    h+=`<div class="divider"></div>
-    <div class="alert alert-warn">${icon(ICO_WARN)} All 14 slots are filled. Contact your class rep if there's an issue.</div>`;
+    <div class="alert alert-ok">${icon(ICO_CHECK)} All 14 joined — open Admin actions to generate pairs.</div>`;
   }
 
   // FIX 3 & 6: Admin-only actions behind PIN
@@ -467,12 +462,14 @@ function checkPin(){
 
 function showAdminPanel(){
   const count=Object.keys(state.members).length;
+  const readyToGenerate=count===14&&!state.locked;
   showModal(`
     <h3>${icon(ICO_LOCK)} Admin panel</h3>
     <p style="margin-bottom:1rem">Current status: <strong>${count}/14 joined</strong> · Ballot ${state.locked?'locked':'open'}</p>
     <div style="display:flex;flex-direction:column;gap:8px">
-      <button class="btn btn-red" onclick="closeModal();confirmReset()">${icon(ICO_TRASH)} Reset entire ballot</button>
+      ${readyToGenerate?`<button class="btn btn-green" onclick="closeModal();lock()">${icon(ICO_BOLT)} Generate case pairs</button>`:''}
       ${state.locked?`<button class="btn" onclick="closeModal();unlockBallot()">${icon(ICO_BOLT)} Unlock ballot (redo pairs)</button>`:''}
+      <button class="btn btn-red" onclick="closeModal();confirmReset()">${icon(ICO_TRASH)} Reset entire ballot</button>
     </div>
     <div class="btn-row" style="margin-top:1rem">
       <button class="btn" onclick="closeModal()">Close</button>
