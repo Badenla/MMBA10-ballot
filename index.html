@@ -7,23 +7,13 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
 :root {
-  --ink: #1a1a2e;
-  --ink2: #4a4a6a;
-  --ink3: #8888aa;
-  --paper: #f8f7f4;
-  --surface: #ffffff;
-  --blue: #2563eb;
-  --blue-light: #eff6ff;
-  --blue-mid: #bfdbfe;
-  --green: #059669;
-  --green-light: #ecfdf5;
-  --amber: #d97706;
-  --amber-light: #fffbeb;
-  --red: #dc2626;
-  --red-light: #fef2f2;
-  --border: #e5e4df;
-  --radius: 12px;
-  --radius-sm: 8px;
+  --ink: #1a1a2e;--ink2: #4a4a6a;--ink3: #8888aa;
+  --paper: #f8f7f4;--surface: #ffffff;
+  --blue: #2563eb;--blue-light: #eff6ff;--blue-mid: #bfdbfe;
+  --green: #059669;--green-light: #ecfdf5;
+  --amber: #d97706;--amber-light: #fffbeb;
+  --red: #dc2626;--red-light: #fef2f2;
+  --border: #e5e4df;--radius: 12px;--radius-sm: 8px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;}
@@ -71,7 +61,6 @@ input[type=text]:focus{border-color:var(--blue);}
 .your-sub{font-size:13px;color:var(--ink3);margin-top:4px;}
 .alert{padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
 .alert-ok{background:var(--green-light);color:var(--green);border:1px solid #a7f3d0;}
-.alert-info{background:var(--blue-light);color:var(--blue);border:1px solid var(--blue-mid);}
 .section-heading{font-size:12px;font-weight:600;color:var(--ink2);text-transform:uppercase;letter-spacing:.6px;margin:1.5rem 0 .75rem;display:flex;align-items:center;gap:8px;}
 table{width:100%;border-collapse:collapse;font-size:13px;}
 th{padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);background:var(--paper);}
@@ -86,7 +75,6 @@ svg.icon{width:15px;height:15px;display:inline-block;vertical-align:-2px;fill:no
 </style>
 </head>
 <body>
-
 <div class="page-header">
   <h1>MMBA 10 Case Ballot</h1>
   <p>Year 1 · 2nd Semester · May – August 2026</p>
@@ -96,13 +84,10 @@ svg.icon{width:15px;height:15px;display:inline-block;vertical-align:-2px;fill:no
     <span class="pill pill-amber">10 OPM cases</span>
   </div>
 </div>
-
-<div class="main">
-  <div id="app"></div>
-</div>
+<div class="main"><div id="app"></div></div>
 
 <script>
-const MEMBERS = [
+const MEMBERS=[
   {full:"Agboola Elizabeth",first:"Elizabeth"},
   {full:"Amagwula Amarachi",first:"Amarachi"},
   {full:"Anigbogu Chizaram",first:"Chizaram"},
@@ -118,8 +103,7 @@ const MEMBERS = [
   {full:"Oyaniran Lanre",first:"Lanre"},
   {full:"Sogaolu Oluwatobi",first:"Oluwatobi"}
 ];
-
-const CMA = [
+const CMA=[
   {name:"Lunch Box",week:"W1",date:"Jun 6"},
   {name:"Hanson Manufacturing Company",week:"W2",date:"Jun 9–13"},
   {name:"Prestige Telephone Company",week:"W3",date:"Jun 13–22"},
@@ -132,8 +116,7 @@ const CMA = [
   {name:"Destin Brass Products Company",week:"W8",date:"Jul 18"},
   {name:"Agbero Nig. Ltd.",week:"W9",date:"Aug 12"}
 ];
-
-const OPM = [
+const OPM=[
   {name:"Kristen's Cookie Company (A)",week:"W1b",date:"Jun 4"},
   {name:"Talent Dry Cleaners",week:"W2b",date:"Jun 13"},
   {name:"AgroLo",week:"W3b",date:"Jun 20"},
@@ -146,23 +129,24 @@ const OPM = [
   {name:"Lex Service Group",week:"W13",date:"Aug 19"}
 ];
 
-const KEY = "mmba10-ballot-v4";
-let state = {members:{},locked:false,pairs:null};
-let myFull = null;
-let inputFocused = false;
-let pollTimer = null;
+const KEY="mmba10-ballot-v4";
+let state={members:{},locked:false,pairs:null};
+let myFull=null;
+let lastTyped=0; // timestamp of last keypress
 
 function getFirst(full){return MEMBERS.find(m=>m.full===full)?.first||full;}
 
 async function load(){
-  try{
-    const r=await window.storage.get(KEY,true);
-    if(r&&r.value) state=JSON.parse(r.value);
-  }catch(e){state={members:{},locked:false,pairs:null};}
+  try{const r=await window.storage.get(KEY,true);if(r&&r.value)state=JSON.parse(r.value);}
+  catch(e){state={members:{},locked:false,pairs:null};}
 }
-
 async function save(){
   try{await window.storage.set(KEY,JSON.stringify(state),true);}catch(e){}
+}
+
+function isUserBusy(){
+  // Block refresh if user typed within the last 10 seconds
+  return (Date.now()-lastTyped)<10000;
 }
 
 function shuffle(a){
@@ -170,7 +154,6 @@ function shuffle(a){
   for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
   return a;
 }
-
 function tryAssign(cases,used,mwc){
   for(let t=0;t<3000;t++){
     const s=shuffle([...Array(14).keys()]);
@@ -181,34 +164,31 @@ function tryAssign(cases,used,mwc){
       if(used.has(k)){ok=false;break;}
       pairs.push({a,b,c:cases[i],k});
     }
-    if(!ok) continue;
+    if(!ok)continue;
     for(const p of pairs){
       if(mwc[p.a]?.[p.c.week]||mwc[p.b]?.[p.c.week]){ok=false;break;}
     }
-    if(ok) return pairs;
+    if(ok)return pairs;
   }
   return null;
 }
-
 function generate(ordered){
   const used=new Set(),mwc={};
-  for(let i=0;i<14;i++) mwc[i]={};
+  for(let i=0;i<14;i++)mwc[i]={};
   let cr=null,t=0;
-  while(t++<500&&!cr) cr=tryAssign(CMA,used,mwc);
-  if(!cr) return null;
+  while(t++<500&&!cr)cr=tryAssign(CMA,used,mwc);
+  if(!cr)return null;
   cr.forEach(p=>{used.add(p.k);mwc[p.a][p.c.week]=1;mwc[p.b][p.c.week]=1;});
   let or=null;t=0;
-  while(t++<500&&!or) or=tryAssign(OPM,used,mwc);
-  if(!or) return null;
+  while(t++<500&&!or)or=tryAssign(OPM,used,mwc);
+  if(!or)return null;
   return{
     cma:cr.map(p=>({c:p.c,a:ordered[p.a],b:ordered[p.b]})),
     opm:or.map(p=>({c:p.c,a:ordered[p.a],b:ordered[p.b]}))
   };
 }
 
-function icon(path){
-  return`<svg class="icon" viewBox="0 0 24 24"><path d="${path}"/></svg>`;
-}
+function icon(path){return`<svg class="icon" viewBox="0 0 24 24"><path d="${path}"/></svg>`;}
 const ICO_CHECK="M20 6L9 17l-5-5";
 const ICO_REFRESH="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15";
 const ICO_TRASH="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6";
@@ -220,16 +200,19 @@ function render(){
   const app=document.getElementById('app');
   if(state.locked&&state.pairs){renderResults(app);return;}
   const me=myFull?state.members[myFull]:null;
-  let h='';
 
+  // Preserve input value across re-renders
+  const prevInput=document.getElementById('ni');
+  const savedVal=prevInput?prevInput.value:'';
+  const savedSel=prevInput?prevInput.dataset.sel:'';
+
+  let h='';
   if(!me){
     h+=`<div class="card">
       <div class="card-title">Pick your number</div>
       <div class="input-row">
-        <input type="text" id="ni" placeholder="Type your first name…" autocomplete="off"/>
-        <button class="btn btn-primary" onclick="join()">
-          ${icon("M7 11l5-5m0 0l5 5m-5-5v12")} Pick my number
-        </button>
+        <input type="text" id="ni" placeholder="Type your first name…" autocomplete="off" value="${savedVal}"/>
+        <button class="btn btn-primary" onclick="join()">${icon("M7 11l5-5m0 0l5 5m-5-5v12")} Pick my number</button>
       </div>
       <div id="sg" class="suggestions"></div>
     </div>`;
@@ -249,8 +232,7 @@ function render(){
     <div class="progress-track"><div class="progress-fill" style="width:${Math.round(count/14*100)}%"></div></div>
   </div>`;
 
-  h+=`<div class="section-heading">${icon(ICO_USERS)} Who's in</div>`;
-  h+=`<div class="member-grid">`;
+  h+=`<div class="section-heading">${icon(ICO_USERS)} Who's in</div><div class="member-grid">`;
   MEMBERS.forEach(m=>{
     const e=state.members[m.full];
     if(e){
@@ -278,13 +260,15 @@ function render(){
   if(!me){
     const ni=document.getElementById('ni');
     const sg=document.getElementById('sg');
+    if(savedSel) ni.dataset.sel=savedSel;
 
-    // Pause auto-refresh while user is typing
-    ni.addEventListener('focus',()=>{ inputFocused=true; });
-    ni.addEventListener("blur",()=>{ setTimeout(()=>{ inputFocused=false; }, 10000); });
+    ni.addEventListener('input',()=>{
+      lastTyped=Date.now(); // record every keystroke
+      suggest(ni,sg);
+    });
+    ni.addEventListener('focus',()=>{ lastTyped=Date.now(); });
 
-    suggest(ni,sg);
-    ni.addEventListener('input',()=>suggest(ni,sg));
+    if(savedVal) suggest(ni,sg);
   }
 }
 
@@ -301,7 +285,7 @@ function pick(full){
   ni.value=m.first;
   ni.dataset.sel=full;
   document.getElementById('sg').innerHTML='';
-  inputFocused=false;
+  lastTyped=0; // user has selected — allow refresh again
 }
 
 async function join(){
@@ -311,13 +295,13 @@ async function join(){
   const match=sel?MEMBERS.find(m=>m.full===sel):MEMBERS.find(m=>m.first.toLowerCase()===typed||m.full.toLowerCase()===typed);
   if(!match){alert('Please select your name from the suggestions.');return;}
   await load();
-  if(state.members[match.full]){myFull=match.full;render();return;}
+  if(state.members[match.full]){myFull=match.full;lastTyped=0;render();return;}
   const used=new Set(Object.values(state.members).map(e=>e.number));
   const avail=[];for(let i=1;i<=14;i++)if(!used.has(i))avail.push(i);
   const num=avail[Math.floor(Math.random()*avail.length)];
   state.members[match.full]={number:num,joinedAt:Date.now()};
   myFull=match.full;
-  inputFocused=false;
+  lastTyped=0; // done — allow refresh
   await save();render();
 }
 
@@ -334,7 +318,6 @@ async function lock(){
 function renderResults(app){
   const pairs=state.pairs;
   let h=`<div class="alert alert-ok">${icon(ICO_CHECK)} Ballot complete — all pairs locked in.</div>`;
-
   h+=`<div class="section-heading"><span class="pill pill-blue" style="font-size:11px">CMA</span> Cost &amp; Management Accounting</div>`;
   h+=`<div class="table-wrap"><table><thead><tr><th>#</th><th>Case</th><th>Date</th><th>Pair</th></tr></thead><tbody>`;
   pairs.cma.forEach((p,i)=>{
@@ -343,7 +326,6 @@ function renderResults(app){
     h+=`<tr${me?' class="highlight"':''}><td style="color:var(--ink3);font-weight:500">${i+1}</td><td>${p.c.name}</td><td style="color:var(--ink3);font-size:12px;white-space:nowrap">${p.c.date}</td><td><span class="pair-tag">${A} &amp; ${B}</span></td></tr>`;
   });
   h+=`</tbody></table></div>`;
-
   h+=`<div class="section-heading"><span class="pill pill-green" style="font-size:11px">OPM</span> Operations Management</div>`;
   h+=`<div class="table-wrap"><table><thead><tr><th>#</th><th>Case</th><th>Date</th><th>Pair</th></tr></thead><tbody>`;
   pairs.opm.forEach((p,i)=>{
@@ -352,7 +334,6 @@ function renderResults(app){
     h+=`<tr${me?' class="highlight"':''}><td style="color:var(--ink3);font-weight:500">${i+1}</td><td>${p.c.name}</td><td style="color:var(--ink3);font-size:12px;white-space:nowrap">${p.c.date}</td><td><span class="pair-tag">${A} &amp; ${B}</span></td></tr>`;
   });
   h+=`</tbody></table></div>`;
-
   h+=`<div class="section-heading">${icon(ICO_USERS)} Full assignment summary</div>`;
   h+=`<div class="table-wrap"><table><thead><tr><th>Name</th><th>CMA case</th><th>OPM case</th></tr></thead><tbody>`;
   const pm={};
@@ -364,9 +345,7 @@ function renderResults(app){
     h+=`<tr${me?' class="highlight"':''}><td style="font-weight:500">${m.first}</td><td style="font-size:12px">${pm[m.full].cma}</td><td style="font-size:12px">${pm[m.full].opm}</td></tr>`;
   });
   h+=`</tbody></table></div>`;
-
-  h+=`<div class="divider"></div>
-  <div class="btn-row">
+  h+=`<div class="divider"></div><div class="btn-row">
     <button class="btn btn-red" onclick="reset()">${icon(ICO_TRASH)} Reset &amp; redo ballot</button>
   </div>`;
   app.innerHTML=h;
@@ -376,22 +355,16 @@ async function manualRefresh(){await load();render();}
 
 async function reset(){
   if(!confirm('Reset the entire ballot? All numbers and pairs will be cleared.'))return;
-  state={members:{},locked:false,pairs:null};myFull=null;
+  state={members:{},locked:false,pairs:null};myFull=null;lastTyped=0;
   await save();render();
-}
-
-function startPolling(){
-  if(pollTimer) clearInterval(pollTimer);
-  pollTimer=setInterval(async()=>{
-    if(inputFocused) return; // pause while user is typing
-    await load();
-    render();
-  },5000);
 }
 
 async function init(){
   await load();render();
-  startPolling();
+  setInterval(async()=>{
+    if(isUserBusy())return; // skip if user typed in last 10 seconds
+    await load();render();
+  },5000);
 }
 init();
 </script>
