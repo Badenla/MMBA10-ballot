@@ -43,7 +43,7 @@ input[type=text]:focus{border-color:var(--blue);}
 .btn-red{background:var(--red-light);color:var(--red);border-color:#fca5a5;}
 .suggestions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
 .sugg-btn{padding:7px 14px;border-radius:20px;font-size:13px;font-weight:500;border:1px solid var(--border);background:var(--paper);color:var(--ink2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
-.sugg-btn:hover,.sugg-btn:focus{background:var(--blue-light);border-color:var(--blue-mid);color:var(--blue);}
+.sugg-btn:hover{background:var(--blue-light);border-color:var(--blue-mid);color:var(--blue);}
 .sugg-btn.selected{background:var(--blue);color:#fff;border-color:var(--blue);}
 .progress-wrap{margin-bottom:1.25rem;}
 .progress-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--ink3);margin-bottom:6px;}
@@ -74,7 +74,10 @@ tr.highlight td{background:var(--blue-light);}
 .divider{border:none;border-top:1px solid var(--border);margin:1.25rem 0;}
 .btn-row{display:flex;gap:8px;flex-wrap:wrap;}
 svg.icon{width:15px;height:15px;display:inline-block;vertical-align:-2px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.hint{font-size:12px;color:var(--ink3);margin-top:6px;}
+.hint{font-size:12px;color:var(--ink3);margin-top:8px;display:flex;align-items:center;gap:4px;}
+.loading{text-align:center;padding:3rem 1rem;color:var(--ink3);font-size:14px;}
+.spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:-4px;}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -87,9 +90,27 @@ svg.icon{width:15px;height:15px;display:inline-block;vertical-align:-2px;fill:no
     <span class="pill pill-amber">10 OPM cases</span>
   </div>
 </div>
-<div class="main"><div id="app"></div></div>
+<div class="main"><div id="app"><div class="loading"><span class="spinner"></span>Connecting...</div></div></div>
+
+<!-- Firebase v9 compat (works as plain script tags, no bundler needed) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
 <script>
+// ── Firebase init ──────────────────────────────────────────────
+firebase.initializeApp({
+  apiKey:"AIzaSyDQGTFUJfPbPtGvfxlLwmsYh9NAhp5nsDc",
+  authDomain:"mmba-ballot.firebaseapp.com",
+  databaseURL:"https://mmba-ballot-default-rtdb.firebaseio.com",
+  projectId:"mmba-ballot",
+  storageBucket:"mmba-ballot.firebasestorage.app",
+  messagingSenderId:"831990049045",
+  appId:"1:831990049045:web:7bf3e073c85d982035e11c"
+});
+const db = firebase.database();
+const REF = db.ref('ballot');
+
+// ── Data ───────────────────────────────────────────────────────
 const MEMBERS=[
   {full:"Agboola Elizabeth",first:"Elizabeth"},
   {full:"Amagwula Amarachi",first:"Amarachi"},
@@ -132,23 +153,14 @@ const OPM=[
   {name:"Lex Service Group",week:"W13",date:"Aug 19"}
 ];
 
-const KEY="mmba10-ballot-v5";
+// ── Local state ────────────────────────────────────────────────
 let state={members:{},locked:false,pairs:null};
-let myFull=null;        // confirmed joined member
-let selectedFull=null;  // JS variable — survives re-renders
-let lastTyped=0;
+let myFull=null;
+let selectedFull=null;
 
 function getFirst(full){return MEMBERS.find(m=>m.full===full)?.first||full;}
 
-async function load(){
-  try{const r=await window.storage.get(KEY,true);if(r&&r.value)state=JSON.parse(r.value);}
-  catch(e){state={members:{},locked:false,pairs:null};}
-}
-async function save(){
-  try{await window.storage.set(KEY,JSON.stringify(state),true);}catch(e){}
-}
-function isUserBusy(){return(Date.now()-lastTyped)<10000;}
-
+// ── Ballot logic ───────────────────────────────────────────────
 function shuffle(a){
   a=[...a];
   for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
@@ -188,23 +200,21 @@ function generate(ordered){
   };
 }
 
+// ── Icons ──────────────────────────────────────────────────────
 function icon(path){return`<svg class="icon" viewBox="0 0 24 24"><path d="${path}"/></svg>`;}
 const ICO_CHECK="M20 6L9 17l-5-5";
-const ICO_REFRESH="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15";
 const ICO_TRASH="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6";
 const ICO_BOLT="M13 2L3 14h9l-1 8 10-12h-9l1-8";
 const ICO_USERS="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75";
 
+// ── Render ─────────────────────────────────────────────────────
 function render(){
   const count=Object.keys(state.members).length;
   const app=document.getElementById('app');
   if(state.locked&&state.pairs){renderResults(app);return;}
   const me=myFull?state.members[myFull]:null;
-
-  // preserve typed text across re-renders
   const prevInput=document.getElementById('ni');
   const savedVal=prevInput?prevInput.value:'';
-
   let h='';
 
   if(!me){
@@ -215,7 +225,7 @@ function render(){
         <button class="btn btn-primary" id="join-btn" onclick="join()">${icon("M7 11l5-5m0 0l5 5m-5-5v12")} Pick my number</button>
       </div>
       <div id="sg" class="suggestions"></div>
-      ${selectedFull?`<div class="hint">${icon(ICO_CHECK)} Selected: <strong>${getFirst(selectedFull)}</strong> — now click Pick my number</div>`:'<div class="hint">Type your name then tap your name from the list below</div>'}
+      <div class="hint">${selectedFull?`${icon(ICO_CHECK)} <strong>${getFirst(selectedFull)}</strong> selected — now click Pick my number`:'Tap your name from the list, then click Pick my number'}</div>
     </div>`;
   } else {
     h+=`<div class="card">
@@ -223,7 +233,7 @@ function render(){
         <div style="font-size:13px;color:var(--ink3);font-weight:500;text-transform:uppercase;letter-spacing:.6px">Your ballot number</div>
         <div class="big-num">${me.number}</div>
         <div class="your-name-label">${getFirst(myFull)}</div>
-        <div class="your-sub">Waiting for the rest of the group...</div>
+        <div class="your-sub">You're in! Waiting for the rest of the group...</div>
       </div>
     </div>`;
   }
@@ -244,18 +254,17 @@ function render(){
   });
   h+=`</div>`;
 
-  if(count===14&&!me){
-    h+=`<div class="divider"></div><div class="alert alert-ok">${icon(ICO_CHECK)} All 14 joined — pick your number first, then generate pairs.</div>`;
-  }
   if(count===14&&me){
     h+=`<div class="divider"></div>
-    <div class="alert alert-ok">${icon(ICO_CHECK)} All 14 members have joined — ready to generate pairs!</div>
+    <div class="alert alert-ok">${icon(ICO_CHECK)} All 14 joined — ready to generate!</div>
     <button class="btn btn-green" onclick="lock()">${icon(ICO_BOLT)} Generate case pairs</button>`;
+  }else if(count===14&&!me){
+    h+=`<div class="divider"></div>
+    <div class="alert alert-warn">All 14 slots are taken. If your name isn't in the list, ask your class rep to reset.</div>`;
   }
 
   h+=`<div class="divider"></div>
   <div class="btn-row">
-    <button class="btn" onclick="manualRefresh()">${icon(ICO_REFRESH)} Refresh</button>
     <button class="btn btn-red" onclick="reset()">${icon(ICO_TRASH)} Reset ballot</button>
   </div>`;
 
@@ -265,12 +274,10 @@ function render(){
     const ni=document.getElementById('ni');
     const sg=document.getElementById('sg');
     ni.addEventListener('input',()=>{
-      lastTyped=Date.now();
-      selectedFull=null; // clear selection when typing again
+      selectedFull=null;
       suggest(ni,sg);
     });
-    ni.addEventListener('focus',()=>{lastTyped=Date.now();});
-    if(savedVal) suggest(ni,sg);
+    if(savedVal)suggest(ni,sg);
   }
 }
 
@@ -291,67 +298,75 @@ function suggest(ni,sg){
 
 function pickName(full){
   selectedFull=full;
-  lastTyped=0; // stop blocking refresh once selected
   const ni=document.getElementById('ni');
   const sg=document.getElementById('sg');
-  if(ni){
-    ni.value=getFirst(full);
-    // update hint text
-    const hint=ni.closest('.card').querySelector('.hint');
-    if(hint) hint.innerHTML=`${icon(ICO_CHECK)} Selected: <strong>${getFirst(full)}</strong> — now click Pick my number`;
-  }
-  if(sg) sg.innerHTML=`<button class="sugg-btn selected" onmousedown="event.preventDefault()">${getFirst(full)}</button>`;
+  if(ni) ni.value=getFirst(full);
+  if(sg) sg.innerHTML=`<button class="sugg-btn selected">${getFirst(full)}</button>`;
+  // update hint
+  const hint=document.querySelector('.hint');
+  if(hint) hint.innerHTML=`${icon(ICO_CHECK)} <strong>${getFirst(full)}</strong> selected — now click Pick my number`;
 }
 
+// ── Join (Firebase transaction ensures unique numbers) ─────────
 async function join(){
   if(!selectedFull){
     const ni=document.getElementById('ni');
     const typed=ni?ni.value.trim().toLowerCase():'';
-    // try exact first-name match as fallback
     const match=MEMBERS.find(m=>m.first.toLowerCase()===typed&&!state.members[m.full]);
-    if(!match){
+    if(match){
+      selectedFull=match.full;
+    }else{
       const sg=document.getElementById('sg');
-      if(sg) sg.innerHTML=`<div style="color:var(--red);font-size:13px;margin-top:4px">Please tap your name from the list first.</div>`;
+      if(sg) sg.innerHTML=`<div style="color:var(--red);font-size:13px;padding:4px 0">Please tap your name from the list first.</div>`;
       return;
     }
-    selectedFull=match.full;
   }
 
-  const joinBtn=document.getElementById('join-btn');
-  if(joinBtn){joinBtn.disabled=true;joinBtn.textContent='Saving...';}
+  const btn=document.getElementById('join-btn');
+  if(btn){btn.disabled=true;btn.innerHTML=`<span class="spinner"></span> Saving...`;}
 
-  await load();
-  // already joined — just restore view
-  if(state.members[selectedFull]){
-    myFull=selectedFull;
-    selectedFull=null;
-    lastTyped=0;
-    render();
-    return;
+  const memberRef=REF.child('members/'+selectedFull.replace(/\s/g,'_'));
+
+  try{
+    // Use a transaction so two people can't grab the same number
+    const result = await REF.child('members').transaction(currentMembers=>{
+      if(!currentMembers) currentMembers={};
+      // already joined
+      if(currentMembers[selectedFull.replace(/\s/g,'_')]) return currentMembers;
+      // find available number
+      const used=new Set(Object.values(currentMembers).map(e=>e.number));
+      const avail=[];
+      for(let i=1;i<=14;i++) if(!used.has(i)) avail.push(i);
+      if(avail.length===0) return; // abort — no numbers left
+      const num=avail[Math.floor(Math.random()*avail.length)];
+      currentMembers[selectedFull.replace(/\s/g,'_')]={number:num, name:selectedFull, joinedAt:Date.now()};
+      return currentMembers;
+    });
+
+    if(result.committed){
+      myFull=selectedFull;
+      selectedFull=null;
+    }else{
+      alert('No numbers left or something went wrong. Please refresh.');
+      if(btn){btn.disabled=false;btn.innerHTML=`${icon("M7 11l5-5m0 0l5 5m-5-5v12")} Pick my number`;}
+    }
+  }catch(e){
+    console.error(e);
+    alert('Connection error. Please check your internet and try again.');
+    if(btn){btn.disabled=false;btn.innerHTML=`${icon("M7 11l5-5m0 0l5 5m-5-5v12")} Pick my number`;}
   }
-
-  const used=new Set(Object.values(state.members).map(e=>e.number));
-  const avail=[];for(let i=1;i<=14;i++)if(!used.has(i))avail.push(i);
-  if(avail.length===0){alert('All 14 numbers are taken!');return;}
-  const num=avail[Math.floor(Math.random()*avail.length)];
-
-  state.members[selectedFull]={number:num,joinedAt:Date.now()};
-  await save();
-
-  myFull=selectedFull;
-  selectedFull=null;
-  lastTyped=0;
-  render(); // now render with myFull set — shows the big number card
 }
 
+// ── Generate & lock ────────────────────────────────────────────
 async function lock(){
-  await load();
-  if(Object.keys(state.members).length<14){alert('Not all 14 members have joined yet.');return;}
-  const ordered=Object.entries(state.members).sort((a,b)=>a[1].number-b[1].number).map(e=>e[0]);
+  const snap=await REF.once('value');
+  const data=snap.val()||{};
+  const members=data.members||{};
+  if(Object.keys(members).length<14){alert('Not all 14 members have joined yet.');return;}
+  const ordered=Object.entries(members).sort((a,b)=>a[1].number-b[1].number).map(e=>e[1].name);
   const pairs=generate(ordered);
   if(!pairs){alert('Could not find valid pairs. Please reset and try again.');return;}
-  state.locked=true;state.pairs=pairs;
-  await save();render();
+  await REF.update({locked:true,pairs:JSON.stringify(pairs)});
 }
 
 function renderResults(app){
@@ -394,23 +409,34 @@ function renderResults(app){
   app.innerHTML=h;
 }
 
-async function manualRefresh(){await load();render();}
-
 async function reset(){
   if(!confirm('Reset the entire ballot? All numbers and pairs will be cleared.'))return;
-  state={members:{},locked:false,pairs:null};
-  myFull=null;selectedFull=null;lastTyped=0;
-  await save();render();
+  await REF.set({members:{},locked:false,pairs:null});
+  myFull=null;selectedFull=null;
 }
 
-async function init(){
-  await load();render();
-  setInterval(async()=>{
-    if(isUserBusy())return;
-    await load();render();
-  },5000);
-}
-init();
+// ── Live listener — updates instantly for everyone ─────────────
+REF.on('value',snap=>{
+  const data=snap.val()||{};
+  // rebuild members map from Firebase keys back to full names
+  const rawMembers=data.members||{};
+  const members={};
+  Object.values(rawMembers).forEach(e=>{
+    if(e&&e.name) members[e.name]={number:e.number,joinedAt:e.joinedAt};
+  });
+  state.members=members;
+  state.locked=data.locked||false;
+  state.pairs=data.pairs?JSON.parse(data.pairs):null;
+
+  // restore myFull if page was refreshed
+  if(!myFull){
+    const saved=sessionStorage.getItem('mmba10_me');
+    if(saved&&members[saved]) myFull=saved;
+  }
+  if(myFull) sessionStorage.setItem('mmba10_me',myFull);
+
+  render();
+});
 </script>
 </body>
 </html>
