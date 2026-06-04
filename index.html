@@ -26,81 +26,23 @@
   --radius-sm: 8px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{
-  font-family:'DM Sans',sans-serif;
-  background:var(--paper);
-  color:var(--ink);
-  min-height:100vh;
-  padding:0;
-}
-.page-header{
-  background:var(--ink);
-  color:#fff;
-  padding:2rem 2rem 1.5rem;
-  position:relative;
-  overflow:hidden;
-}
-.page-header::before{
-  content:'';
-  position:absolute;
-  width:300px;height:300px;
-  border-radius:50%;
-  background:rgba(37,99,235,0.15);
-  top:-100px;right:-80px;
-  pointer-events:none;
-}
-.page-header h1{
-  font-family:'DM Serif Display',serif;
-  font-size:clamp(1.6rem,4vw,2.2rem);
-  font-weight:400;
-  letter-spacing:-0.5px;
-  margin-bottom:4px;
-}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;}
+.page-header{background:var(--ink);color:#fff;padding:2rem 2rem 1.5rem;position:relative;overflow:hidden;}
+.page-header::before{content:'';position:absolute;width:300px;height:300px;border-radius:50%;background:rgba(37,99,235,0.15);top:-100px;right:-80px;pointer-events:none;}
+.page-header h1{font-family:'DM Serif Display',serif;font-size:clamp(1.6rem,4vw,2.2rem);font-weight:400;letter-spacing:-0.5px;margin-bottom:4px;}
 .page-header p{font-size:14px;color:rgba(255,255,255,0.6);font-weight:300;}
-.pill{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;
-}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;}
 .pill-blue{background:var(--blue-light);color:var(--blue);}
 .pill-green{background:var(--green-light);color:var(--green);}
 .pill-amber{background:var(--amber-light);color:var(--amber);}
 .pills{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap;}
 .main{padding:1.5rem;}
-.card{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  padding:1.25rem 1.5rem;
-  margin-bottom:1rem;
-}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1rem;}
 .card-title{font-size:13px;font-weight:600;color:var(--ink2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:1rem;}
 .input-row{display:flex;gap:8px;flex-wrap:wrap;}
-input[type=text]{
-  flex:1;min-width:180px;
-  padding:10px 14px;
-  border:1px solid var(--border);
-  border-radius:var(--radius-sm);
-  font-size:14px;
-  font-family:'DM Sans',sans-serif;
-  background:var(--paper);
-  color:var(--ink);
-  outline:none;
-  transition:border-color .2s;
-}
+input[type=text]{flex:1;min-width:180px;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);outline:none;transition:border-color .2s;}
 input[type=text]:focus{border-color:var(--blue);}
-.btn{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:10px 18px;
-  border-radius:var(--radius-sm);
-  font-size:14px;font-weight:500;
-  font-family:'DM Sans',sans-serif;
-  cursor:pointer;
-  border:1px solid var(--border);
-  background:var(--surface);
-  color:var(--ink);
-  transition:all .15s;
-  white-space:nowrap;
-}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:var(--radius-sm);font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--ink);transition:all .15s;white-space:nowrap;}
 .btn:hover{background:var(--paper);}
 .btn:disabled{opacity:.4;cursor:not-allowed;}
 .btn-primary{background:var(--blue);color:#fff;border-color:var(--blue);}
@@ -110,87 +52,34 @@ input[type=text]:focus{border-color:var(--blue);}
 .btn-red{background:var(--red-light);color:var(--red);border-color:#fca5a5;}
 .btn-red:hover{background:#fee2e2;}
 .suggestions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
-.sugg-btn{
-  padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;
-  border:1px solid var(--border);background:var(--paper);color:var(--ink2);
-  cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;
-}
+.sugg-btn{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid var(--border);background:var(--paper);color:var(--ink2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
 .sugg-btn:hover{background:var(--blue-light);border-color:var(--blue-mid);color:var(--blue);}
 .progress-wrap{margin-bottom:1.25rem;}
 .progress-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--ink3);margin-bottom:6px;}
 .progress-track{height:6px;background:var(--border);border-radius:6px;overflow:hidden;}
 .progress-fill{height:100%;background:var(--blue);border-radius:6px;transition:width .5s cubic-bezier(.4,0,.2,1);}
-.member-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
-  gap:8px;
-}
-.chip{
-  display:flex;align-items:center;gap:8px;
-  padding:8px 10px;
-  border-radius:var(--radius-sm);
-  border:1px solid var(--border);
-  background:var(--paper);
-  font-size:13px;font-weight:400;
-  transition:all .2s;
-}
+.member-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;}
+.chip{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--paper);font-size:13px;transition:all .2s;}
 .chip.joined{background:var(--surface);border-color:var(--blue-mid);}
 .chip.pending{opacity:.35;}
-.num-circle{
-  width:28px;height:28px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:600;flex-shrink:0;
-}
+.num-circle{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;}
 .num-circle.has-num{background:var(--blue-light);color:var(--blue);}
 .num-circle.no-num{background:var(--border);color:var(--ink3);}
-.your-number-card{
-  text-align:center;
-  padding:1.5rem 1rem;
-}
-.big-num{
-  font-family:'DM Serif Display',serif;
-  font-size:72px;color:var(--blue);
-  line-height:1;margin:0.5rem 0;
-}
+.your-number-card{text-align:center;padding:1.5rem 1rem;}
+.big-num{font-family:'DM Serif Display',serif;font-size:72px;color:var(--blue);line-height:1;margin:0.5rem 0;}
 .your-name-label{font-size:16px;font-weight:500;}
 .your-sub{font-size:13px;color:var(--ink3);margin-top:4px;}
-.alert{
-  padding:10px 14px;border-radius:var(--radius-sm);
-  font-size:13px;margin-bottom:1rem;
-  display:flex;align-items:center;gap:8px;
-}
+.alert{padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
 .alert-ok{background:var(--green-light);color:var(--green);border:1px solid #a7f3d0;}
 .alert-info{background:var(--blue-light);color:var(--blue);border:1px solid var(--blue-mid);}
-.alert-warn{background:var(--amber-light);color:var(--amber);border:1px solid #fde68a;}
-.section-heading{
-  font-size:12px;font-weight:600;color:var(--ink2);
-  text-transform:uppercase;letter-spacing:.6px;
-  margin:1.5rem 0 .75rem;
-  display:flex;align-items:center;gap:8px;
-}
+.section-heading{font-size:12px;font-weight:600;color:var(--ink2);text-transform:uppercase;letter-spacing:.6px;margin:1.5rem 0 .75rem;display:flex;align-items:center;gap:8px;}
 table{width:100%;border-collapse:collapse;font-size:13px;}
-th{
-  padding:8px 12px;text-align:left;
-  font-size:11px;font-weight:600;color:var(--ink3);
-  text-transform:uppercase;letter-spacing:.5px;
-  border-bottom:1px solid var(--border);
-  background:var(--paper);
-}
+th{padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);background:var(--paper);}
 td{padding:9px 12px;border-bottom:1px solid var(--border);}
 tr:last-child td{border-bottom:none;}
 tr.highlight td{background:var(--blue-light);}
-.pair-tag{
-  display:inline-flex;align-items:center;gap:4px;
-  background:var(--paper);border:1px solid var(--border);
-  border-radius:20px;padding:3px 10px;font-size:12px;
-}
-.table-wrap{
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  overflow:hidden;
-  overflow-x:auto;
-  margin-bottom:1rem;
-}
+.pair-tag{display:inline-flex;align-items:center;gap:4px;background:var(--paper);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:12px;}
+.table-wrap{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;overflow-x:auto;margin-bottom:1rem;}
 .divider{border:none;border-top:1px solid var(--border);margin:1.25rem 0;}
 .btn-row{display:flex;gap:8px;flex-wrap:wrap;}
 svg.icon{width:15px;height:15px;display:inline-block;vertical-align:-2px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
@@ -258,32 +147,31 @@ const OPM = [
 ];
 
 const KEY = "mmba10-ballot-v4";
-let state = {members:{}, locked:false, pairs:null};
+let state = {members:{},locked:false,pairs:null};
 let myFull = null;
+let inputFocused = false;
+let pollTimer = null;
 
-function getFirst(full){ return MEMBERS.find(m=>m.full===full)?.first || full; }
+function getFirst(full){return MEMBERS.find(m=>m.full===full)?.first||full;}
 
 async function load(){
   try{
-    const r = await window.storage.get(KEY, true);
-    if(r && r.value) state = JSON.parse(r.value);
-  } catch(e){ state={members:{},locked:false,pairs:null}; }
+    const r=await window.storage.get(KEY,true);
+    if(r&&r.value) state=JSON.parse(r.value);
+  }catch(e){state={members:{},locked:false,pairs:null};}
 }
 
 async function save(){
-  try{ await window.storage.set(KEY, JSON.stringify(state), true); } catch(e){}
+  try{await window.storage.set(KEY,JSON.stringify(state),true);}catch(e){}
 }
 
 function shuffle(a){
   a=[...a];
-  for(let i=a.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [a[i],a[j]]=[a[j],a[i]];
-  }
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
   return a;
 }
 
-function tryAssign(cases, used, mwc){
+function tryAssign(cases,used,mwc){
   for(let t=0;t<3000;t++){
     const s=shuffle([...Array(14).keys()]);
     const pairs=[];let ok=true;
@@ -303,7 +191,7 @@ function tryAssign(cases, used, mwc){
 }
 
 function generate(ordered){
-  const used=new Set(), mwc={};
+  const used=new Set(),mwc={};
   for(let i=0;i<14;i++) mwc[i]={};
   let cr=null,t=0;
   while(t++<500&&!cr) cr=tryAssign(CMA,used,mwc);
@@ -312,21 +200,20 @@ function generate(ordered){
   let or=null;t=0;
   while(t++<500&&!or) or=tryAssign(OPM,used,mwc);
   if(!or) return null;
-  return {
+  return{
     cma:cr.map(p=>({c:p.c,a:ordered[p.a],b:ordered[p.b]})),
     opm:or.map(p=>({c:p.c,a:ordered[p.a],b:ordered[p.b]}))
   };
 }
 
 function icon(path){
-  return `<svg class="icon" viewBox="0 0 24 24"><path d="${path}"/></svg>`;
+  return`<svg class="icon" viewBox="0 0 24 24"><path d="${path}"/></svg>`;
 }
 const ICO_CHECK="M20 6L9 17l-5-5";
 const ICO_REFRESH="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15";
 const ICO_TRASH="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6";
 const ICO_BOLT="M13 2L3 14h9l-1 8 10-12h-9l1-8";
 const ICO_USERS="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75";
-const ICO_COPY="M8 4H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2M8 4a2 2 0 002 2h4a2 2 0 002-2M8 4a2 2 0 012-2h4a2 2 0 012 2";
 
 function render(){
   const count=Object.keys(state.members).length;
@@ -339,7 +226,7 @@ function render(){
     h+=`<div class="card">
       <div class="card-title">Pick your number</div>
       <div class="input-row">
-        <input type="text" id="ni" placeholder="Type your first name…"/>
+        <input type="text" id="ni" placeholder="Type your first name…" autocomplete="off"/>
         <button class="btn btn-primary" onclick="join()">
           ${icon("M7 11l5-5m0 0l5 5m-5-5v12")} Pick my number
         </button>
@@ -382,7 +269,7 @@ function render(){
 
   h+=`<div class="divider"></div>
   <div class="btn-row">
-    <button class="btn" onclick="refresh()">${icon(ICO_REFRESH)} Refresh</button>
+    <button class="btn" onclick="manualRefresh()">${icon(ICO_REFRESH)} Refresh</button>
     <button class="btn btn-red" onclick="reset()">${icon(ICO_TRASH)} Reset ballot</button>
   </div>`;
 
@@ -391,6 +278,11 @@ function render(){
   if(!me){
     const ni=document.getElementById('ni');
     const sg=document.getElementById('sg');
+
+    // Pause auto-refresh while user is typing
+    ni.addEventListener('focus',()=>{ inputFocused=true; });
+    ni.addEventListener("blur",()=>{ setTimeout(()=>{ inputFocused=false; }, 10000); });
+
     suggest(ni,sg);
     ni.addEventListener('input',()=>suggest(ni,sg));
   }
@@ -399,8 +291,8 @@ function render(){
 function suggest(ni,sg){
   const v=ni.value.toLowerCase().trim();
   if(!v){sg.innerHTML='';return;}
-  const m=MEMBERS.filter(m=>(m.first.toLowerCase().includes(v)||m.full.toLowerCase().includes(v))&&!state.members[m.full]);
-  sg.innerHTML=m.map(m=>`<button class="sugg-btn" onclick="pick('${m.full}')">${m.first}</button>`).join('');
+  const matches=MEMBERS.filter(m=>(m.first.toLowerCase().includes(v)||m.full.toLowerCase().includes(v))&&!state.members[m.full]);
+  sg.innerHTML=matches.map(m=>`<button class="sugg-btn" onmousedown="pick('${m.full}')">${m.first}</button>`).join('');
 }
 
 function pick(full){
@@ -409,6 +301,7 @@ function pick(full){
   ni.value=m.first;
   ni.dataset.sel=full;
   document.getElementById('sg').innerHTML='';
+  inputFocused=false;
 }
 
 async function join(){
@@ -424,6 +317,7 @@ async function join(){
   const num=avail[Math.floor(Math.random()*avail.length)];
   state.members[match.full]={number:num,joinedAt:Date.now()};
   myFull=match.full;
+  inputFocused=false;
   await save();render();
 }
 
@@ -478,7 +372,7 @@ function renderResults(app){
   app.innerHTML=h;
 }
 
-async function refresh(){await load();render();}
+async function manualRefresh(){await load();render();}
 
 async function reset(){
   if(!confirm('Reset the entire ballot? All numbers and pairs will be cleared.'))return;
@@ -486,9 +380,18 @@ async function reset(){
   await save();render();
 }
 
+function startPolling(){
+  if(pollTimer) clearInterval(pollTimer);
+  pollTimer=setInterval(async()=>{
+    if(inputFocused) return; // pause while user is typing
+    await load();
+    render();
+  },5000);
+}
+
 async function init(){
   await load();render();
-  setInterval(async()=>{await load();render();},5000);
+  startPolling();
 }
 init();
 </script>
