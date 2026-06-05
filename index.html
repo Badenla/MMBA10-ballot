@@ -185,33 +185,37 @@ function shuffle(a){
   }
   return a;
 }
+function buildPool(nCases){
+  // nCases*2 slots needed from 14 members; some present twice
+  const base=[0,1,2,3,4,5,6,7,8,9,10,11,12,13];
+  const extras=nCases*2-14;
+  const extra=extras>0?shuffle([...base]).slice(0,extras):[];
+  return shuffle([...base,...extra]);
+}
 function tryAssign(cases,used,mwc){
-  for(let t=0;t<3000;t++){
-    const s=shuffle([...Array(14).keys()]);
+  for(let t=0;t<5000;t++){
+    const pool=buildPool(cases.length);
     const pairs=[];let ok=true;
     for(let i=0;i<cases.length;i++){
-      const a=s[i*2],b=s[i*2+1];
+      const a=pool[i*2],b=pool[i*2+1];
+      if(a===b){ok=false;break;}
       const k=Math.min(a,b)+'-'+Math.max(a,b);
       if(used.has(k)){ok=false;break;}
+      if((mwc[a]&&mwc[a][cases[i].week])||(mwc[b]&&mwc[b][cases[i].week])){ok=false;break;}
       pairs.push({a,b,c:cases[i],k});
     }
     if(!ok)continue;
-    for(const p of pairs){
-      if(mwc[p.a]?.[p.c.week]||mwc[p.b]?.[p.c.week]){ok=false;break;}
-    }
-    if(ok)return pairs;
+    return pairs;
   }
   return null;
 }
 function generate(ordered){
-  const used=new Set(),mwc={};
-  for(let i=0;i<14;i++)mwc[i]={};
-  let cr=null,t=0;
-  while(t++<500&&!cr)cr=tryAssign(CMA,used,mwc);
+  const used=new Set(),mwc=[];
+  for(let i=0;i<14;i++)mwc.push({});
+  const cr=tryAssign(CMA,used,mwc);
   if(!cr)return null;
   cr.forEach(p=>{used.add(p.k);mwc[p.a][p.c.week]=1;mwc[p.b][p.c.week]=1;});
-  let or=null;t=0;
-  while(t++<500&&!or)or=tryAssign(OPM,used,mwc);
+  const or=tryAssign(OPM,used,mwc);
   if(!or)return null;
   return{
     cma:cr.map(p=>({c:p.c,a:ordered[p.a],b:ordered[p.b]})),
@@ -500,20 +504,28 @@ async function unlockBallot(){
 
 // ── Generate & lock ────────────────────────────────────────────
 async function lock(){
-  const snap=await REF.once('value');
-  const data=snap.val()||{};
-  const members=data.members||{};
-  if(Object.keys(members).length<14){
-    showModal(`<h3>Not ready yet</h3><p>Only ${Object.keys(members).length} of 14 members have joined.</p><div class="btn-row" style="margin-top:1rem"><button class="btn btn-primary" onclick="closeModal()">OK</button></div>`);
-    return;
+  showModal(`<h3 style="display:flex;align-items:center;gap:8px"><span class="spinner"></span> Generating pairs...</h3><p>Please wait a moment.</p>`);
+  try{
+    const snap=await REF.once('value');
+    const data=snap.val()||{};
+    const members=data.members||{};
+    const count=Object.keys(members).length;
+    if(count<14){
+      showModal(`<h3>Not ready yet</h3><p>Only ${count} of 14 members have joined.</p><div class="btn-row" style="margin-top:1rem"><button class="btn btn-primary" onclick="closeModal()">OK</button></div>`);
+      return;
+    }
+    const ordered=Object.entries(members).sort((a,b)=>a[1].number-b[1].number).map(e=>e[1].name);
+    const pairs=generate(ordered);
+    if(!pairs){
+      showModal(`<h3>Could not generate</h3><p>The algorithm could not find valid pairs. Please try again.</p><div class="btn-row" style="margin-top:1rem"><button class="btn btn-green" onclick="closeModal();lock()">Try again</button><button class="btn" onclick="closeModal()">Cancel</button></div>`);
+      return;
+    }
+    await REF.update({locked:true,pairs:JSON.stringify(pairs)});
+    closeModal();
+  }catch(e){
+    console.error('Generate error:',e);
+    showModal(`<h3>Error</h3><p>${e.message||'Something went wrong. Please try again.'}</p><div class="btn-row" style="margin-top:1rem"><button class="btn btn-primary" onclick="closeModal()">OK</button></div>`);
   }
-  const ordered=Object.entries(members).sort((a,b)=>a[1].number-b[1].number).map(e=>e[1].name);
-  const pairs=generate(ordered);
-  if(!pairs){
-    showModal(`<h3>Could not generate</h3><p>The algorithm couldn't find valid pairs. Please try again or reset.</p><div class="btn-row" style="margin-top:1rem"><button class="btn btn-primary" onclick="closeModal()">OK</button></div>`);
-    return;
-  }
-  await REF.update({locked:true,pairs:JSON.stringify(pairs)});
 }
 
 // ── Results ────────────────────────────────────────────────────
